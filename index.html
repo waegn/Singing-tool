@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>RTJ Singing for Sanity — v1G+</title>
+<style>
+:root{
+  --blue-soft:#cfe9ff;
+  --blue-deep:#005fa3;
+  --teal-soft:#e6fff9;
+  --accent:#4aa3ff;
+  --text:#222;
+  --bg:#ffffff;
+}
+body{
+  margin:0;
+  font-family:"Inter",system-ui,sans-serif;
+  background:linear-gradient(180deg,var(--blue-soft),var(--teal-soft));
+  color:var(--text);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  min-height:100vh;
+  padding:1rem;
+}
+h1{
+  color:var(--blue-deep);
+  font-size:1.7rem;
+  margin:.5rem 0;
+  text-align:center;
+}
+.mode-selector{
+  display:flex;
+  gap:1rem;
+  flex-wrap:wrap;
+  justify-content:center;
+  margin:1rem 0 1.5rem;
+}
+.mode-btn{
+  background:var(--blue-deep);
+  color:#fff;
+  border:none;
+  padding:.7rem 1.3rem;
+  border-radius:1rem;
+  font-size:1rem;
+  cursor:pointer;
+  transition:.2s;
+}
+.mode-btn:hover{background:var(--accent);}
+.container{
+  width:min(95%,550px);
+  background:var(--bg);
+  border-radius:1.5rem;
+  box-shadow:0 2px 10px rgba(0,0,0,.1);
+  padding:1.5rem;
+  display:flex;
+  flex-direction:column;
+  gap:1.5rem;
+}
+/* section headers */
+section h2{color:var(--blue-deep);margin-bottom:.3rem;text-align:center;}
+/* Breath */
+.breath-section{text-align:center;}
+.breath-bar{
+  height:24px;background:#e6f2ff;border-radius:12px;overflow:hidden;margin-top:.5rem;
+}
+.breath-fill{
+  width:0%;height:100%;background:var(--accent);transition:width .3s ease;
+}
+.timing-sliders{display:flex;flex-direction:column;gap:.7rem;margin-top:1rem;}
+.timing-sliders label{font-size:.9rem;font-weight:600;}
+input[type=range]{width:100%;accent-color:var(--accent);}
+/* Pitch */
+.pitch-section{text-align:center;}
+.note-display{font-size:2rem;color:var(--blue-deep);font-weight:700;}
+.freq-display{font-size:1rem;opacity:.7;margin-bottom:.5rem;}
+.pitch-meter{width:100%;height:12px;background:#eee;border-radius:6px;overflow:hidden;margin-bottom:.5rem;}
+.pitch-fill{width:50%;height:100%;background:var(--accent);}
+#pitchCanvas{
+  width:100%;height:160px;
+  border-radius:12px;
+  background:linear-gradient(to top,#eaf6ff,#ffffff);
+  box-shadow:inset 0 0 10px rgba(0,0,0,0.05);
+}
+.canvas-caption{font-size:.85rem;opacity:.7;margin-top:.3rem;}
+.tuning-fork{
+  display:flex;justify-content:center;align-items:center;gap:.5rem;margin-top:.8rem;flex-wrap:wrap;
+}
+select{padding:.3rem .6rem;border-radius:.6rem;border:1px solid #ccc;}
+/* Sustain */
+.sustain-section{text-align:center;}
+.sustain-timer{font-size:1.5rem;color:var(--blue-deep);font-weight:700;}
+/* CO2 placeholder */
+.co2-section{text-align:center;background:#f3fbff;padding:.8rem;border-radius:1rem;}
+/* Session data */
+.session-data{text-align:center;font-size:.95rem;background:var(--blue-soft);
+  padding:.6rem;border-radius:.8rem;}
+.log-box{
+  background:#f6fbff;border:1px solid #d0e6f7;border-radius:.8rem;
+  min-height:60px;padding:.5rem;font-size:.85rem;overflow:auto;
+}
+/* Controls */
+.controls{display:flex;justify-content:center;gap:.8rem;flex-wrap:wrap;}
+.ctrl-btn{
+  background:var(--blue-deep);color:#fff;border:none;
+  padding:.6rem 1.2rem;border-radius:1rem;font-size:1rem;cursor:pointer;
+}
+.ctrl-btn.off{background:#999;}
+/* Tips */
+.tips{text-align:center;font-style:italic;opacity:.8;}
+@media(max-width:500px){
+  h1{font-size:1.4rem;}
+  .mode-btn{padding:.6rem 1rem;font-size:.9rem;}
+}
+</style>
+</head>
+<body>
+
+<h1>🎵 RTJ Singing for Sanity</h1>
+<p>Breath • Voice • Awareness</p>
+
+<div class="mode-selector">
+  <button class="mode-btn">Breath</button>
+  <button class="mode-btn">Pitch</button>
+  <button class="mode-btn">Sustain</button>
+  <button class="mode-btn">CO₂</button>
+</div>
+
+<div class="container">
+
+  <!-- BREATH -->
+  <section class="breath-section">
+    <h2>Breath Cycle</h2>
+    <div class="breath-bar"><div class="breath-fill"></div></div>
+    <div class="timing-sliders">
+      <label>Inhale <input type="range" min="2" max="10" value="4"> 4s</label>
+      <label>Hold <input type="range" min="0" max="10" value="2"> 2s</label>
+      <label>Exhale <input type="range" min="2" max="12" value="6"> 6s</label>
+      <label>Hold after <input type="range" min="0" max="10" value="2"> 2s</label>
+    </div>
+  </section>
+
+  <!-- PITCH -->
+  <section class="pitch-section">
+    <h2>Pitch Trainer</h2>
+    <div class="note-display">—</div>
+    <div class="freq-display">0 Hz</div>
+    <div class="pitch-meter"><div class="pitch-fill"></div></div>
+
+    <!-- Calm-EQ visualiser -->
+    <canvas id="pitchCanvas"></canvas>
+    <div class="canvas-caption">Calm-EQ Visualiser</div>
+
+    <div class="tuning-fork">
+      <label for="targetNote">Target Note:</label>
+      <select id="targetNote">
+        <option>C3</option><option>D3</option><option>E3</option>
+        <option>F3</option><option>G3</option><option>A3</option><option>B3</option>
+        <option>C4</option><option>D4</option><option>E4</option>
+        <option>F4</option><option>G4</option><option>A4</option><option>B4</option>
+        <option>C5</option>
+      </select>
+      <button class="ctrl-btn" id="playTone">🔔 Play Tone</button>
+    </div>
+  </section>
+
+  <!-- SUSTAIN -->
+  <section class="sustain-section">
+    <h2>Sustain Trainer</h2>
+    <div class="sustain-timer">00:00 s</div>
+    <p class="tips">Hold a steady tone — this timer will track your duration.</p>
+  </section>
+
+  <!-- CO₂ -->
+  <section class="co2-section">
+    <h2>CO₂ Tolerance Tracker (coming soon)</h2>
+    <p>Track exhale-hold duration and monitor improvement.</p>
+  </section>
+
+  <!-- SESSION -->
+  <div class="session-data">
+    Session length: <span>0 min</span> • CO₂ score: <span>—</span>
+  </div>
+  <div class="log-box" id="logBox">No sessions saved yet.</div>
+
+  <!-- CONTROLS -->
+  <div class="controls">
+    <button class="ctrl-btn off" id="micToggle">🎙️ Mic Off</button>
+    <button class="ctrl-btn" id="startCycle">▶️ Start</button>
+    <button class="ctrl-btn" id="saveProgress">💾 Save Progress</button>
+    <button class="ctrl-btn" id="reset">🔁 Reset</button>
+  </div>
+
+  <!-- TIPS -->
+  <p class="tips">Feel ribs widen sideways; notice vibration in chest and skull.</p>
+</div>
+
+</body>
+</html>
